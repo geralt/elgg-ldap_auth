@@ -21,6 +21,10 @@ return array(
 	'ldap_auth:settings:help:search_attr' => "Enter search attibutes as key, value pairs with the key being the attribute description, and the value being the actual LDAP attribute.
 		<i>firstname</i>, <i>lastname</i> and <i>mail</i> are used to create the Elgg user profile. The following example will work for ActiveDirectory:<br/>
 		<blockquote><i>firstname:givenname, lastname:sn, mail:mail</i></blockquote>",
+	'ldap_auth:settings:label:group_dn' => "Optional: Group to check the user's membership",
+        'ldap_auth:settings:help:group_dn' => "Enter the DN of a groupOfNames to check if the user is one of its members",
+        'ldap_auth:settings:label:group_attr' => "Optional: Attribute to check the user's membership to a group",
+        'ldap_auth:settings:help:group_attr' => "Usually <i>member</i>, which will be assumed if nothing entered",
 	'ldap_auth:settings:label:user_create' => "Create users",
 	'ldap_auth:settings:help:user_create' => "Optionally, an account can get created when a LDAP authentication was succesful.",
 	'ldap_auth:connection_error' => "Unable to connect to LDAP server. Please contact system administrator",
