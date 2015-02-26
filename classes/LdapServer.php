@@ -11,6 +11,8 @@ class LdapServer {
 	private $bind_password;
 	private $search_attr;
 	private $filter_attr;
+	private $group_dn;
+        private $group_attr;
 
 	/**
 	 * Set values from the provided settings
@@ -27,14 +29,18 @@ class LdapServer {
 			'bind_password',
 			'search_attr',
 			'filter_attr',
+			'group_dn',
+                        'group_attr',
 		);
 
 		foreach ($fields as $field) {
 			if (empty($settings->$field)) {
-				$message = "LDAP: missing settings value for $field.";
-
-				elgg_log($message, 'ERROR');
-				throw new Exception($message);
+				if ($field!='group_dn' && $field!='group_attr') {
+					
+					$message = "LDAP: missing settings value for $field.";
+					elgg_log($message, 'ERROR');
+					throw new Exception($message);
+				}
 			}
 
 			$this->$field = $settings->$field;
@@ -122,6 +128,50 @@ class LdapServer {
 
 		return $data;
 	}
+
+	/**
+        * Check if a user is a member of a group
+        *
+        * @param string $userdn The user dn to check membership
+        * @return boolean
+        */
+        public function isMember($userdn) {
+
+                if (empty($this->group_dn)) {
+                        // No group in settings
+                        elgg_log("No LDAP group in settings", 'NOTICE');
+                        return true;
+                }
+
+                if (empty($this->group_attr)) {
+                        // There is a group in settings but no parameter. Assuming member
+                        $this->group_attr="member";
+                }
+
+                $filter="($this->group_attr=$userdn)";
+
+                $search_attributes = $this->getSearchAttr();
+
+                $query = ldap_search($this->getLink(), $this->group_dn, $filter, array_values($search_attributes));
+
+                if (!$query) {
+                        elgg_log("Query in isMember function is null");
+                        return false;
+                }
+
+                $result = ldap_get_entries($this->getLink(), $query);
+
+                if (empty($result['count'])) {
+                        elgg_log("LDAP search for filter \"$filter\" on \"$this->group_dn\" returned no results.", 'NOTICE');
+                        return false;
+                } else {
+                        $resultdn=$result[0]["dn"];
+
+                        elgg_log("LDAP search for filter \"$filter\" on \"$this->group_dn\" returned $resultdn", 'NOTICE');
+                }
+
+                return true;
+        }
 
 	/**
 	 * Unbinds from the LDAP directory
