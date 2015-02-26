@@ -101,7 +101,7 @@ function ldap_auth_authenticate($credentials) {
 	}
 
 	if ($settings->create_user !== 'off') {
-		return ldap_auth_create_user($username, $password, $result);
+		return ldap_auth_create_user($username, $result);
 	}
 
 	register_error(elgg_echo("ldap_auth:no_account"));
@@ -115,13 +115,14 @@ function ldap_auth_authenticate($credentials) {
  * @param string $password
  * @param array  $data Data fetched from LDAP
  */
-function ldap_auth_create_user($username, $password, $data) {
+function ldap_auth_create_user($username, $data) {
 	// Check that we have the values. register_user() will take
 	// care of more detailed validation.
 	$firstname = elgg_extract('firstname', $data);
 	$lastname  = elgg_extract('lastname', $data);
 	$email     = elgg_extract('mail', $data);
-
+	$password  = substr(str_shuffle(str_repeat('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', mt_rand(1,10))),1,20);
+	
 	// Combine firstname and lastname
 	$name = implode(' ', array($firstname, $lastname));
 
