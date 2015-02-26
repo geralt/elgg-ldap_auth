@@ -86,6 +86,14 @@ function ldap_auth_authenticate($credentials) {
 		return false;
 	}
 
+	// Check if the user is a member of the group, in case both parameters are filled
+        $result2 = $server->isMember($result['dn']);
+
+        if (!$result2) {
+                elgg_log("User found and its bind completed ok, but is not a member of the required group","NOTICE");
+                return false;
+        }
+
 	$user = get_user_by_username($username);
 
 	if ($user) {
