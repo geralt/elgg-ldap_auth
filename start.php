@@ -100,8 +100,6 @@ function ldap_auth_authenticate($credentials) {
 		register_error(elgg_echo('ldap_auth:not_in_group'));
 		return false;
 	}
-	//$result2string = ($result2) ? 'TRUE' : 'FALSE';
-	//elgg_log("El resultado de la consulta de grupo ha sido $result2string","NOTICE");
 
 	$user = get_user_by_username($username);
 
